@@ -10,7 +10,7 @@
     "seed": "npx prisma db seed",
     "build": "npx tsc",
     "start": "node dist/index.js",
-    "dev": "ts-node-dev src/index.ts"
+    "dev": "ts-node-dev src/index.ts | pino-pretty"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +25,7 @@
     "esbuild": "^0.19.11",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
+    "pino": "^9.5.0",
     "uuid": "^9.0.1",
     "zod": "^3.22.4"
   },
@@ -37,6 +38,7 @@
     "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^20.11.5",
     "esbuild-register": "^3.5.0",
+    "pino-pretty": "^13.0.0",
     "prisma": "^5.8.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.3.3"
