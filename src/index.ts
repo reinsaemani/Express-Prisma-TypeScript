@@ -8,9 +8,12 @@ import profileRouter from './routes/profile.router';
 import { notFoundHandler } from './middleware/not-found';
 import { errorHandler } from './middleware/error-handler';
 import cookieParser from 'cookie-parser';
+import requestLogger from './middleware/requestLogger';
+import { pino } from "pino";
 
 dotenv.config();
 
+export const logger = pino({ name: "server start" });
 const PORT: number = parseInt(process.env.PORT as string, 10);
 
 const app = express();
@@ -30,6 +33,9 @@ app.use(express.urlencoded({ extended: true }));
 // cookie parser middleware
 app.use(cookieParser());
 
+// Request Logger
+app.use(requestLogger)
+
 // Main Routes
 app.use('/api/auth', authRouter);
 app.use('/api/profile', profileRouter);
@@ -43,5 +49,5 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-  console.log(`Listening on PORT ${PORT}`);
+  logger.info(`Listening on PORT ${PORT}`);
 });

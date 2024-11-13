@@ -33,7 +33,7 @@ An Express-based RESTful API with TypeScript and Prisma , managing both authenti
 
 - [ ] Sanitize queries against SQL Injection and XSS
 
-- [ ] Middlewrae logger
+- [x] Middlewrae logger
 
 - [ ] Testing
 
