@@ -1,15 +1,19 @@
 import * as dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
-import authorRouter from './routes/author.router';
-import bookRouter from './routes/book.router';
-import authRouter from './routes/auth.router';
-import profileRouter from './routes/profile.router';
+
+
 import { notFoundHandler } from './middleware/not-found';
 import { errorHandler } from './middleware/error-handler';
 import cookieParser from 'cookie-parser';
 import requestLogger from './middleware/requestLogger';
 import { pino } from "pino";
+import vacanciesRouter from './routes/vacancies.router';
+import userRouter from './routes/users.router';
+import applicantsRouter from './routes/applicants.router';
+import applicantsDetailsRouter from './routes/applicantsDetails.router';
+import accountRouter from './routes/account.router';
+import authRouter from './routes/auth.router';
 
 dotenv.config();
 
@@ -37,10 +41,12 @@ app.use(cookieParser());
 app.use(requestLogger)
 
 // Main Routes
+app.use('/api/accounts', accountRouter);  
 app.use('/api/auth', authRouter);
-app.use('/api/profile', profileRouter);
-app.use('/api/authors', authorRouter);
-app.use('/api/books', bookRouter);
+app.use('/api/applicants', applicantsRouter);
+app.use('/api/applicants-details', applicantsDetailsRouter);
+app.use('/api/users', userRouter);
+app.use('/api/vacancies', vacanciesRouter);
 
 // Not Found Middleware
 app.use(notFoundHandler);

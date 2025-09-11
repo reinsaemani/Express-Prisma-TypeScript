@@ -1,5 +1,6 @@
 import { Response } from 'express';
-import HttpStatusCode from './HttpStatusCode';
+import { HttpStatusCode } from './HttpStatusCode';
+
 
 interface SuccessResponse<T> {
   success: true;
@@ -17,9 +18,10 @@ interface ErrorResponse<T> {
 export const sendSuccessResponse = <T>(
   res: Response,
   data: T,
-  status = HttpStatusCode.OK
+  message = 'Success',
+  status: HttpStatusCode = HttpStatusCode.OK
 ): Response<SuccessResponse<T>> => {
-  return res.status(status).json({ success: true, data });
+  return res.status(status).json({ success: true, message, data });
 };
 
 // Success response without data (e.g., for delete operations)

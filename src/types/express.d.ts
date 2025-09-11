@@ -1,7 +1,11 @@
-import { TloginRequest } from './general';
+import { account } from './general';
 
-declare module 'express' {
-  interface Request {
-    user?: TloginRequest;
+declare global {
+  namespace Express {
+    interface Request {
+      user?: account;
+    }
   }
 }
+
+export {};

@@ -1,64 +1,67 @@
-import * as UserService from '../services/user.service';
+import * as AccountService from '../services/account.service';
 import { NextFunction, Request, Response } from 'express';
-import { TUserSchema, userSchema } from '../types/zod';
+import { accountSchema, TAccountSchema} from '../types/zod';
 import { sendSuccessNoDataResponse, sendSuccessResponse, sendUnauthorizedResponse } from '../utils/responseHandler';
 import { comparePasswords } from '../utils/bcryptHandler';
 import { generateToken } from '../utils/jwtHandler';
 
-export const login = async (request: Request, response: Response, next: NextFunction) => {
+// ------------------ LOGIN ------------------
+export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userRequest: TUserSchema = request.body;
-    const user = await UserService.getUserByUsername(userRequest.username);
+    const userRequest: TAccountSchema = req.body;
+    const user = await AccountService.getAccountByUsername(userRequest.username);
 
     if (!user) {
-      return sendUnauthorizedResponse(response, 'Credentials Error');
+      return sendUnauthorizedResponse(res, 'Credentials Error');
     }
 
-    const passwordCompare = await comparePasswords(userRequest.password, user.password);
+    const passwordCompare = await comparePasswords(userRequest.password, user.password_hash);
 
-    if (passwordCompare) {
-      const token = generateToken({ id: user.id }, '30d');
-
-      response.cookie('jwt', token, {
-        httpOnly: true,
-        secure: process.env.APP_ENV !== 'developement',
-        sameSite: 'strict',
-        maxAge: 30 * 24 * 60 * 60 * 1000,
-      });
-
-      const responseData = {
-        fullName: user.fullName,
-        username: user.username,
-        email: user.email,
-      };
-      return sendSuccessResponse(response, responseData);
-    } else {
-      return sendUnauthorizedResponse(response, 'Credentials Error');
+    if (!passwordCompare) {
+      return sendUnauthorizedResponse(res, 'Credentials Error');
     }
-  } catch (error: any) {
-    next(error);
-  }
-};
 
-export const logout = async (request: Request, response: Response, next: NextFunction) => {
-  try {
-    response.cookie('jwt', '', {
+    // ✅ pakai id user, bukan fungsi
+    const token = generateToken({ id: user.account_id }, '30d');
+
+    res.cookie('jwt', token, {
       httpOnly: true,
-      expires: new Date(0),
+      secure: process.env.APP_ENV !== 'developement',
+      sameSite: 'strict',
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 hari
     });
 
-    return sendSuccessNoDataResponse(response, 'Logout Successful');
+    const responseData = {
+      account_id: user.account_id,
+      username: user.username,
+      role: user.role,
+    };
+
+    return sendSuccessResponse(res, responseData, 'Login successful');
   } catch (error) {
     next(error);
   }
 };
 
-// Middlewares ________________________
 
-export const validateLoginData = (request: Request, response: Response, next: NextFunction) => {
+// ------------------ LOGOUT ------------------
+export const logout = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const data = request.body;
-    userSchema.parse(data);
+    res.cookie('jwt', '', {
+      httpOnly: true,
+      expires: new Date(0),
+    });
+
+    return sendSuccessNoDataResponse(res, 'Logout successful');
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ------------------ VALIDATION ------------------
+export const validateLoginData = (req: Request, res: Response, next: NextFunction) => {
+  try {
+    accountSchema.parse(req.body);
     next();
   } catch (error) {
     next(error);

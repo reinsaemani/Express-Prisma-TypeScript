@@ -1,6 +1,6 @@
 import { TuserUpdateSchema, userUpdateSchema } from '../types/zod';
 import { NextFunction, Request, Response } from 'express';
-import * as UserService from '../services/user.service';
+import * as UserService from '../services/users.service';
 import { sendSuccessResponse } from '../utils/responseHandler';
 import { hashPassword } from '../utils/bcryptHandler';
 
