@@ -1,94 +1,143 @@
-import { hashPassword } from './../src/utils/bcryptHandler';
-import { TAuthorWrite, TBookWrite, TUserRegisterWrite } from '../src/types/general';
+// prisma/seed.ts
 import { db } from '../src/utils/db.server';
-import bcrypt from 'bcryptjs';
-import { v4 as uuidv4 } from 'uuid';
-
-async function getUser(): Promise<TUserRegisterWrite> {
-  const password = 'admin';
-  const hashedPassword = await hashPassword(password);
-  return {
-    id: uuidv4(),
-    fullName: 'john doe',
-    username: 'admin',
-    password: hashedPassword,
-    email: 'email@company.com',
-  };
-}
-
-function getAuthors(): Array<TAuthorWrite> {
-  return [
-    { firstName: 'john', lastName: 'doe' },
-    { firstName: 'william', lastName: 'parker' },
-  ];
-}
-
-function getBooks(): Array<Omit<TBookWrite, 'authorId'>> {
-  return [
-    {
-      title: 'Book 1',
-      isFiction: false,
-      datePublished: new Date(),
-    },
-    {
-      title: 'Book 2',
-      isFiction: true,
-      datePublished: new Date(),
-    },
-  ];
-}
+import { hashPassword } from '../src/utils/bcryptHandler';
 
 async function seed() {
-  // Delete user Records
-  await db.user.deleteMany();
-  console.log('Deleted records in user table');
+  // Bersihkan tabel (urutan penting karena ada relasi)
+  await db.applicants_details.deleteMany();
+  await db.applicants.deleteMany();
+  await db.users.deleteMany();
+  await db.vacancies.deleteMany();
+  await db.account.deleteMany();
+  await db.documents_files.deleteMany();
 
-  // Seed new user
-  const user = await getUser();
-  console.log(`[*] Seeding Author : ${JSON.stringify(user)}`);
-  console.log(`[*] password : admin `);
-  await db.user.create({
+  console.log('[*] Deleted all records');
+
+  // Seed account (ADMIN, PENGAWAS, INTERVIEWER)
+  const adminPassword = await hashPassword('admin123');
+  const pengawasPassword = await hashPassword('pengawas123');
+  const interviewerPassword = await hashPassword('interviewer123');
+
+  const admin = await db.account.create({
     data: {
-      ...user,
+      username: 'admin',
+      password_hash: adminPassword,
+      role: 'ADMIN',
     },
   });
 
-  //Seed Author
-  await Promise.all(
-    getAuthors().map((author) => {
-      console.log(`[*] Seeding Author : ${JSON.stringify(author)}`);
-      return db.author.create({
-        data: {
-          firstName: author.firstName,
-          lastName: author.lastName,
-        },
-      });
-    })
-  );
-
-  const author = await db.author.findFirst({
-    where: {
-      firstName: 'william',
+  const pengawas = await db.account.create({
+    data: {
+      username: 'pengawas',
+      password_hash: pengawasPassword,
+      role: 'PENGAWAS',
     },
   });
 
-  // Seed book
-  await Promise.all(
-    getBooks().map((book) => {
-      const createBook = {
-        datePublished: book.datePublished,
-        isFiction: book.isFiction,
-        title: book.title,
-        authorId: author?.id || 0,
-      };
-      console.log(`[*] Seeding Book : ${JSON.stringify(createBook)}`);
-      return db.book.create({
-        data: {
-          ...createBook,
-        },
-      });
-    })
-  );
+  const interviewer = await db.account.create({
+    data: {
+      username: 'interviewer',
+      password_hash: interviewerPassword,
+      role: 'INTERVIEWER',
+    },
+  });
+
+  console.log('[*] Seeded accounts');
+
+  // Seed users
+  const user1 = await db.users.create({
+    data: {
+      full_name: 'John Doe',
+      email: 'johndoe@mail.com',
+      gender: 'MALE',
+      phone_number: '08123456789',
+    },
+  });
+
+  const user2 = await db.users.create({
+    data: {
+      full_name: 'Jane Smith',
+      email: 'jane@mail.com',
+      gender: 'FEMALE',
+      phone_number: '08987654321',
+    },
+  });
+
+  console.log('[*] Seeded users');
+
+  // Seed vacancies
+  const vacancy1 = await db.vacancies.create({
+    data: {
+      title: 'Software Engineer',
+      type: 'Full_Time',
+      degree: 'Sarjana',
+      qualification: 'Menguasai TypeScript & Node.js',
+      responsibilities: 'Develop backend services',
+      deadline: new Date('2025-12-31'),
+    },
+  });
+
+  const vacancy2 = await db.vacancies.create({
+    data: {
+      title: 'Data Analyst',
+      type: 'Part_Time',
+      degree: 'Diploma',
+      qualification: 'Menguasai SQL & Python',
+      responsibilities: 'Analisis data untuk laporan bisnis',
+      deadline: new Date('2025-11-30'),
+    },
+  });
+
+  console.log('[*] Seeded vacancies');
+
+  // Seed applicants
+  const applicant1 = await db.applicants.create({
+    data: {
+      user_id: user1.user_id,
+      vacancy_id: vacancy1.vacancies_id,
+      current_stage: 'HR_INT',
+    },
+  });
+
+  const applicant2 = await db.applicants.create({
+    data: {
+      user_id: user2.user_id,
+      vacancy_id: vacancy2.vacancies_id,
+      current_stage: 'SKILL_TEST',
+    },
+  });
+
+  console.log('[*] Seeded applicants');
+
+  // Seed applicants_details
+  await db.applicants_details.create({
+    data: {
+      applicants_id: applicant1.applicants_id,
+      stage: 'HR_INT',
+      status: 'PASSED',
+      notes: 'Good communication skills',
+    },
+  });
+
+  await db.applicants_details.create({
+    data: {
+      applicants_id: applicant2.applicants_id,
+      stage: 'SKILL_TEST',
+      status: 'PENDING',
+      notes: 'Waiting for test result',
+    },
+  });
+
+  console.log('[*] Seeded applicants_details');
+
+  console.log('✅ Seeding completed');
 }
 
-seed();
+seed()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await db.$disconnect();
+  });
