@@ -4,6 +4,8 @@
 
 [Younesse ElKars](#) - [LinkedIn](https://www.linkedin.com/in/younesse-elkars/)
 
+## Modify: Reinhard Alfaries Saemani
+
 ## Description:
 
 An Express-based RESTful API with TypeScript and Prisma , managing both authentication and CRUD operations.
@@ -42,13 +44,13 @@ An Express-based RESTful API with TypeScript and Prisma , managing both authenti
 #### Clone the repo:
 
 ```bash
-git clone https://github.com/Unesdevdev/express-prisma-ts.git
+git clone https://github.com/reinsaemani/Express-Prisma-TypeScript.git
 ```
 
 #### Install dependencies:
 
 ```bash
-npm install
+pnpm install
 ```
 
 #### Set environment variables:
@@ -60,13 +62,13 @@ cp .env.example .env
 ## Running Locally
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 ## Running in Production
 
 ```bash
-npm run start
+pnpm run start
 ```
 
 ## Contributions
