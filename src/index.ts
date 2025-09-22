@@ -22,14 +22,22 @@ const PORT: number = parseInt(process.env.PORT as string, 10);
 
 const app = express();
 
+
+
 // CORS Middleware
 const corsOptions = {
-  origin: process.env.APP_ENV == 'developement' ? '*' : process.env.ORIGIN,
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  origin: process.env.APP_ENV === 'development'
+    ? 'http://localhost:3000'  // frontend localhost
+    : process.env.ORIGIN,       // production
+  methods: ['GET','HEAD','PUT','PATCH','POST','DELETE'],
   credentials: true,
   optionsSuccessStatus: 204,
 };
+
 app.use(cors(corsOptions));
+
+// pastikan ini DISEBELAH middleware JSON / cookie
+app.options('*', cors(corsOptions));
 // JSON Middleware & Form Data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

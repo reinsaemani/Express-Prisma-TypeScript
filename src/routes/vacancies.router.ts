@@ -35,6 +35,12 @@ router.put(
   VacanciesController.updateVacancies
 );
 
+router.patch(
+  '/:id/status',
+  VacanciesController.checkExistingVacancies,
+  VacanciesController.updateVacancyStatus
+);
+
 // Access : Private
 // DELETE : delete a Vacancies
 // Params : id

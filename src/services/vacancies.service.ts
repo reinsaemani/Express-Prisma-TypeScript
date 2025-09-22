@@ -89,6 +89,37 @@ export const updateVacancies = async (
   });
 };
 
+
+// services/vacancies.service.ts
+
+export const updateVacancyStatus = async (
+  id: TVacanciesID,
+  isOpen: boolean
+): Promise<TVacanciesRead> => {
+  return db.vacancies.update({
+    where: {
+      vacancies_id: id,
+    },
+    data: {
+      is_open: isOpen,
+    },
+    select: {
+      vacancies_id: true,
+      title: true,
+      location: true,
+      type: true,
+      degree: true,
+      qualification: true,
+      responsibilities: true,
+      documents: true,
+      benefit: true,
+      deadline: true,
+      is_open: true,
+    },
+  });
+};
+
+
 // Delete Vacancies
 export const deleteVacancies = async (id: TVacanciesID): Promise<void> => {
   await db.vacancies.delete({

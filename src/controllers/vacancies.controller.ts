@@ -45,6 +45,29 @@ export const updateVacancies = async (request: Request, response: Response, next
   }
 };
 
+// controllers/vacancies.controller.ts
+
+export const updateVacancyStatus = async (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
+  try {
+    const id = parseInt(request.params.id, 10);
+    const { is_open } = request.body;
+    const updatedVacancy = await VacanciesService.updateVacancyStatus(id, is_open);
+
+    return sendSuccessResponse(
+      response,
+      updatedVacancy,
+      "Vacancy status updated successfully"
+    );
+  } catch (error: any) {
+    next(error);
+  }
+};
+
+
 export const deleteVacancies = async (request: Request, response: Response, next: NextFunction) => {
   try {
     const id = parseInt(request.params.id, 10);
