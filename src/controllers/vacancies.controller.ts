@@ -24,22 +24,33 @@ export const getVacancies = async (request: Request, response: Response, next: N
   }
 };
 
-export const createVacancies = async (request: Request, response: Response, next: NextFunction) => {
+export const createVacancies = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const vacancies: TVacanciesWrite = request.body;
+    const body = req.body;
+
+    const vacancies: TVacanciesWrite = {
+      ...body,
+      deadline: body.deadline ? new Date(body.deadline) : null,
+    };
+
     const newVacancies = await VacanciesService.createVacancies(vacancies);
-    return sendSuccessResponse(response, newVacancies, 'Vacancy created successfully', HttpStatusCode.CREATED);
-  } catch (error: any) {
+    return sendSuccessResponse(res, newVacancies, "Vacancy created successfully", HttpStatusCode.CREATED);
+  } catch (error) {
     next(error);
   }
 };
 
-export const updateVacancies = async (request: Request, response: Response, next: NextFunction) => {
+export const updateVacancies = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = parseInt(request.params.id, 10);
-    const vacancies: TVacanciesWrite = request.body;
+    const id = parseInt(req.params.id, 10);
+
+    const vacancies: Partial<TVacanciesWrite> = {
+      ...req.body,
+      deadline: req.body.deadline ? new Date(req.body.deadline) : null,
+    };
+
     const updatedVacancies = await VacanciesService.updateVacancies(vacancies, id);
-    return sendSuccessResponse(response, updatedVacancies);
+    return sendSuccessResponse(res, updatedVacancies, "Vacancy updated successfully");
   } catch (error: any) {
     next(error);
   }
