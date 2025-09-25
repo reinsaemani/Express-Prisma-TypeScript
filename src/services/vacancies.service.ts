@@ -46,7 +46,11 @@ export const getVacancies = async (id: TVacanciesID): Promise<TVacanciesRead | n
 // Create new Vacancies
 export const createVacancies = async (Vacancies: TVacanciesWrite): Promise<TVacanciesRead> => {
   return db.vacancies.create({
-    data: Vacancies,
+    data: {
+      ...Vacancies,
+      // convert deadline string ("2025-12-31") ke Date
+      deadline: Vacancies.deadline ? new Date(Vacancies.deadline) : null,
+    },
     select: {
       vacancies_id: true,
       title: true,
@@ -64,15 +68,13 @@ export const createVacancies = async (Vacancies: TVacanciesWrite): Promise<TVaca
 };
 
 // Update Vacancies
-export const updateVacancies = async (
-  Vacancies: TVacanciesWrite,
-  id: TVacanciesID
-): Promise<TVacanciesRead> => {
+export const updateVacancies = async (Vacancies: TVacanciesWrite, id: TVacanciesID): Promise<TVacanciesRead> => {
   return db.vacancies.update({
-    where: {
-      vacancies_id: id,
+    where: { vacancies_id: id },
+    data: {
+      ...Vacancies,
+      deadline: Vacancies.deadline ? new Date(Vacancies.deadline) : null,
     },
-    data: Vacancies,
     select: {
       vacancies_id: true,
       title: true,

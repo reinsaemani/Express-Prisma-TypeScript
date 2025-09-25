@@ -30,6 +30,7 @@ export const createVacancies = async (request: Request, response: Response, next
     const newVacancies = await VacanciesService.createVacancies(vacancies);
     return sendSuccessResponse(response, newVacancies, 'Vacancy created successfully', HttpStatusCode.CREATED);
   } catch (error: any) {
+    console.error('CreateVacancies error:', error);
     next(error);
   }
 };
@@ -74,6 +75,7 @@ export const validateVacanciesData = (request: Request, response: Response, next
     vacanciesSchema.parse(vacancies);
     next();
   } catch (error) {
+    console.error('Validation error:', error);
     next(error);
   }
 };
