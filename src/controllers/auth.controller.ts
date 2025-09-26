@@ -1,6 +1,6 @@
 import * as AccountService from '../services/account.service';
 import { NextFunction, Request, Response } from 'express';
-import { accountSchema, TAccountSchema} from '../types/zod';
+import { accountSchema, TAccountSchema } from '../types/zod';
 import { sendSuccessNoDataResponse, sendSuccessResponse, sendUnauthorizedResponse } from '../utils/responseHandler';
 import { comparePasswords } from '../utils/bcryptHandler';
 import { generateToken } from '../utils/jwtHandler';
@@ -21,12 +21,11 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
       return sendUnauthorizedResponse(res, 'Credentials Error');
     }
 
-    // ✅ pakai id user, bukan fungsi
     const token = generateToken({ id: user.account_id }, '30d');
 
     res.cookie('jwt', token, {
       httpOnly: true,
-      secure: process.env.APP_ENV !== 'developement',
+      secure: process.env.APP_ENV !== 'development',
       sameSite: 'strict',
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 hari
     });
@@ -42,7 +41,6 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     next(error);
   }
 };
-
 
 // ------------------ LOGOUT ------------------
 export const logout = async (req: Request, res: Response, next: NextFunction) => {

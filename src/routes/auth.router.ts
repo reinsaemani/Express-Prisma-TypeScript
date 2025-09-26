@@ -13,4 +13,19 @@ router.post('/login', AuthController.validateLoginData, AuthController.login);
 
 router.post('/logout', protectAuth, AuthController.logout);
 
+router.get('/me', protectAuth, (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ success: false, error: { message: 'Unauthorized' } });
+  }
+
+  return res.json({
+    success: true,
+    data: {
+      account_id: req.user.account_id,
+      username: req.user.username,
+      role: req.user.role,
+    },
+  });
+});
+
 export default router;
