@@ -13,7 +13,6 @@ import applicantsRouter from './routes/applicants.router';
 import applicantsDetailsRouter from './routes/applicantsDetails.router';
 import accountRouter from './routes/account.router';
 import authRouter from './routes/auth.router';
-import filesRouter from './routes/files.router';
 
 dotenv.config();
 
@@ -54,7 +53,6 @@ app.use('/api/applicants', applicantsRouter);
 app.use('/api/applicants-details', applicantsDetailsRouter);
 app.use('/api/users', userRouter);
 app.use('/api/vacancies', vacanciesRouter);
-app.use('/api/files', filesRouter);
 
 // Not Found Middleware
 app.use(notFoundHandler);

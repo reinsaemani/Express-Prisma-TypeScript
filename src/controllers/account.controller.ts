@@ -6,13 +6,11 @@ import { sendSuccessResponse, sendBadRequestResponse} from '../utils/responseHan
 import { account_role } from '@prisma/client';
 
 
-// ✅ Create account (Admin only)
 export const createAccount = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const parsed = accountSchema.parse(req.body);
     const hashed = await hashPassword(parsed.password);
 
-    // ✅ fallback pakai enum
     const role: account_role = parsed.role ?? account_role.INTERVIEWER;
 
     const account = await AccountService.createAccount(parsed.username, hashed, role);
@@ -22,7 +20,6 @@ export const createAccount = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-// ✅ Get account by ID
 export const getAccount = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = Number(req.params.id);
@@ -34,7 +31,6 @@ export const getAccount = async (req: Request, res: Response, next: NextFunction
   }
 };
 
-// ✅ List accounts
 export const listAccounts = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const accounts = await AccountService.listAccounts();
@@ -44,7 +40,6 @@ export const listAccounts = async (req: Request, res: Response, next: NextFuncti
   }
 };
 
-// ✅ Update role
 export const updateRole = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = Number(req.params.id);
@@ -57,7 +52,6 @@ export const updateRole = async (req: Request, res: Response, next: NextFunction
   }
 };
 
-// ✅ Reset password (Admin only)
 export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = Number(req.params.id);

@@ -15,7 +15,7 @@ const protectAuth = async (request: Request, response: Response, next: NextFunct
     const authUser = await AccountService.getAccountByID(decoded.id);
 
     if (authUser) {
-      request.user = authUser; // user = account
+      request.user = authUser;
       return next();
     }
 
