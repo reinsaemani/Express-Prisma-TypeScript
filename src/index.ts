@@ -13,6 +13,9 @@ import applicantsRouter from './routes/applicants.router';
 import applicantsDetailsRouter from './routes/applicantsDetails.router';
 import accountRouter from './routes/account.router';
 import authRouter from './routes/auth.router';
+import documentsRouter from "./routes/documents.routes";
+import path from 'path';
+import regionRouter from './routes/region.router';
 
 dotenv.config();
 
@@ -46,6 +49,11 @@ app.use(cookieParser());
 // Request Logger
 app.use(requestLogger);
 
+app.use(
+  "/uploads/applicants",
+  express.static(path.join(__dirname, "../storage/uploads/applicants"))
+);
+
 // Main Routes
 app.use('/api/accounts', accountRouter);
 app.use('/api/auth', authRouter);
@@ -53,6 +61,8 @@ app.use('/api/applicants', applicantsRouter);
 app.use('/api/applicants-details', applicantsDetailsRouter);
 app.use('/api/users', userRouter);
 app.use('/api/vacancies', vacanciesRouter);
+app.use("/api/documents", documentsRouter);
+app.use("/api/region", regionRouter);
 
 // Not Found Middleware
 app.use(notFoundHandler);
