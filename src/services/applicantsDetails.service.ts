@@ -17,7 +17,10 @@ export const listApplicantsDetailsByApplicant = async (applicants_id: number): P
   return db.applicants_details.findMany({ where: { applicants_id } });
 };
 
-export const updateApplicantsDetailByID = async (id: number, data: Partial<TApplicantsDetailsWrite>): Promise<TApplicantsDetailsRead> => {
+export const updateApplicantsDetailByID = async (
+  id: number,
+  data: Partial<TApplicantsDetailsWrite>
+): Promise<TApplicantsDetailsRead> => {
   return db.applicants_details.update({ where: { detail_applicants_id: id }, data });
 };
 
