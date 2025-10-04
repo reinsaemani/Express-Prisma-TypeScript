@@ -7,16 +7,16 @@ export const listVacancies = async (): Promise<TVacanciesRead[]> => {
     select: {
       vacancies_id: true,
       title: true,
-      location: true,
+      // location: true,
       type: true,
       degree: true,
+      level: true,
       qualification: true,
       responsibilities: true,
       documents: true,
       benefit: true,
       deadline: true,
       is_open: true,
-      // created_at & updated_at tidak diambil karena di TVacanciesRead di-Omit
     },
   });
 };
@@ -30,9 +30,10 @@ export const getVacancies = async (id: TVacanciesID): Promise<TVacanciesRead | n
     select: {
       vacancies_id: true,
       title: true,
-      location: true,
+      // location: true,
       type: true,
       degree: true,
+      level: true,
       qualification: true,
       responsibilities: true,
       documents: true,
@@ -53,9 +54,10 @@ export const createVacancies = async (vacancies: TVacanciesWrite): Promise<TVaca
     select: {
       vacancies_id: true,
       title: true,
-      location: true,
+      // location: true,
       type: true,
       degree: true,
+      level: true,
       qualification: true,
       responsibilities: true,
       documents: true,
@@ -80,9 +82,10 @@ export const updateVacancies = async (
     select: {
       vacancies_id: true,
       title: true,
-      location: true,
+      // location: true,
       type: true,
       degree: true,
+      level: true,
       qualification: true,
       responsibilities: true,
       documents: true,
@@ -106,9 +109,10 @@ export const updateVacancyStatus = async (id: TVacanciesID, isOpen: boolean): Pr
     select: {
       vacancies_id: true,
       title: true,
-      location: true,
+      // location: true,
       type: true,
       degree: true,
+      level: true,
       qualification: true,
       responsibilities: true,
       documents: true,

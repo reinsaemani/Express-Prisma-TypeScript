@@ -20,7 +20,6 @@ export const createApplicantsDetail = async (req: Request, res: Response, next: 
 
     const normalized = {
       ...parsed,
-      status: parsed.status ?? 'PENDING',
       notes: parsed.notes ?? null,
       penilaian: parsed.penilaian ?? null,
       schedule_at: parsed.schedule_at ?? null,
@@ -32,7 +31,6 @@ export const createApplicantsDetail = async (req: Request, res: Response, next: 
     next(error);
   }
 };
-
 
 // Get by ID
 export const getApplicantsDetail = async (req: Request, res: Response, next: NextFunction) => {
@@ -62,7 +60,12 @@ export const updateApplicantsDetail = async (req: Request, res: Response, next: 
   try {
     const id = Number(req.params.id);
     const parsed = applicantsDetailsUpdateSchema.parse(req.body);
-    const normalized = { ...parsed, notes: parsed.notes ?? null, penilaian: parsed.penilaian ?? null, schedule_at: parsed.schedule_at ?? null };
+    const normalized = {
+      ...parsed,
+      notes: parsed.notes ?? null,
+      penilaian: parsed.penilaian ?? null,
+      schedule_at: parsed.schedule_at ?? null,
+    };
     const updated = await ApplicantsDetailsService.updateApplicantsDetailByID(id, normalized);
     return sendSuccessResponse(res, updated, 'Applicants detail updated successfully');
   } catch (error) {

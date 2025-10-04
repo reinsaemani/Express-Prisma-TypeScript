@@ -18,28 +18,12 @@ async function seed() {
   const pengawasPassword = await hashPassword('pengawas123');
   const interviewerPassword = await hashPassword('interviewer123');
 
-  const admin = await db.account.create({
-    data: {
-      username: 'admin',
-      password_hash: adminPassword,
-      role: 'ADMIN',
-    },
-  });
-
-  const pengawas = await db.account.create({
-    data: {
-      username: 'pengawas',
-      password_hash: pengawasPassword,
-      role: 'PENGAWAS',
-    },
-  });
-
-  const interviewer = await db.account.create({
-    data: {
-      username: 'interviewer',
-      password_hash: interviewerPassword,
-      role: 'INTERVIEWER',
-    },
+  await db.account.createMany({
+    data: [
+      { username: 'admin', password_hash: adminPassword, role: 'ADMIN' },
+      { username: 'pengawas', password_hash: pengawasPassword, role: 'PENGAWAS' },
+      { username: 'interviewer', password_hash: interviewerPassword, role: 'INTERVIEWER' },
+    ],
   });
 
   console.log('[*] Seeded accounts');
@@ -73,18 +57,22 @@ async function seed() {
       degree: 'Sarjana',
       qualification: 'Menguasai TypeScript & Node.js',
       responsibilities: 'Develop backend services',
+      benefit: 'BPJS + Makan Siang',
       deadline: new Date('2025-12-31'),
+      level: 'Staff',
     },
   });
 
   const vacancy2 = await db.vacancies.create({
     data: {
-      title: 'Data Analyst',
-      type: 'Part_Time',
+      title: 'IT Support',
+      type: 'Full_Time',
       degree: 'Diploma',
-      qualification: 'Menguasai SQL & Python',
-      responsibilities: 'Analisis data untuk laporan bisnis',
+      qualification: 'Menguasai Hardware & Network',
+      responsibilities: 'Handle troubleshooting & support',
+      benefit: 'BPJS + Tunjangan Transport',
       deadline: new Date('2025-11-30'),
+      level: 'Staff',
     },
   });
 
@@ -101,8 +89,16 @@ async function seed() {
 
   const applicant2 = await db.applicants.create({
     data: {
-      user_id: user2.user_id,
+      user_id: user1.user_id, // user yang sama apply vacancy lain
       vacancy_id: vacancy2.vacancies_id,
+      current_stage: 'SKILL_TEST',
+    },
+  });
+
+  const applicant3 = await db.applicants.create({
+    data: {
+      user_id: user2.user_id,
+      vacancy_id: vacancy1.vacancies_id,
       current_stage: 'SKILL_TEST',
     },
   });
@@ -113,18 +109,36 @@ async function seed() {
   await db.applicants_details.create({
     data: {
       applicants_id: applicant1.applicants_id,
-      stage: 'HR_INT',
-      status: 'PASSED',
-      notes: 'Good communication skills',
+      vacancy_id: vacancy1.vacancies_id,
+      stage: 'SKILL_TEST',
+      status: 'NOT_RECOMMENDED',
+      penilaian: '60/100',
+      notes: 'Kurang di algo test',
+      schedule_at: new Date('2025-10-10'),
     },
   });
 
   await db.applicants_details.create({
     data: {
       applicants_id: applicant2.applicants_id,
+      vacancy_id: vacancy2.vacancies_id,
       stage: 'SKILL_TEST',
-      status: 'PENDING',
-      notes: 'Waiting for test result',
+      status: 'RECOMMENDED',
+      penilaian: '85/100',
+      notes: 'Bagus troubleshooting',
+      schedule_at: new Date('2025-10-12'),
+    },
+  });
+
+  await db.applicants_details.create({
+    data: {
+      applicants_id: applicant3.applicants_id,
+      vacancy_id: vacancy1.vacancies_id,
+      stage: 'SKILL_TEST',
+      status: 'CONSIDERED',
+      penilaian: '75/100',
+      notes: 'Cukup baik, perlu observasi lebih lanjut',
+      schedule_at: new Date('2025-10-15'),
     },
   });
 

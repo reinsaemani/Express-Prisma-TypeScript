@@ -25,9 +25,9 @@ router.post('/', protectAuth, isAdmin, VacanciesController.validateVacanciesData
 // Body : sesuai TVacanciesWrite
 router.put(
   '/:id',
-  isAdmin,
   protectAuth,
-  VacanciesController.validateVacanciesData,
+  isAdmin,
+  VacanciesController.validateVacanciesUpdateData,
   VacanciesController.checkExistingVacancies,
   VacanciesController.updateVacancies
 );
@@ -45,8 +45,8 @@ router.patch(
 // Params : id
 router.delete(
   '/:id',
-  isAdmin,
   protectAuth,
+  isAdmin,
   VacanciesController.checkExistingVacancies,
   VacanciesController.deleteVacancies
 );

@@ -16,7 +16,6 @@ import authRouter from './routes/auth.router';
 import documentsRouter from './routes/documents.routes';
 import path from 'path';
 import regionRouter from './routes/region.router';
-import recruitmentRouter from './routes/recruitment.router';
 
 dotenv.config();
 
@@ -61,7 +60,7 @@ app.use('/api/users', userRouter);
 app.use('/api/vacancies', vacanciesRouter);
 app.use('/api/documents', documentsRouter);
 app.use('/api/region', regionRouter);
-app.use('/api/recruitment', recruitmentRouter);
+// app.use('/api/recruitment', recruitmentRouter);
 
 // Not Found Middleware
 app.use(notFoundHandler);

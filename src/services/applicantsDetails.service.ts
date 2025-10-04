@@ -6,9 +6,14 @@ export const listAllApplicantsDetails = async (): Promise<TApplicantsDetailsRead
 };
 
 export const createApplicantsDetail = async (data: TApplicantsDetailsWrite): Promise<TApplicantsDetailsRead> => {
-  return db.applicants_details.create({ data });
+  return db.applicants_details.create({
+    data,
+    include: {
+      applicant: { include: { user: true, vacancy: true } },
+      vacancy: true,
+    },
+  });
 };
-
 export const getApplicantsDetailByID = async (id: number): Promise<TApplicantsDetailsRead | null> => {
   return db.applicants_details.findUnique({ where: { detail_applicants_id: id } });
 };
@@ -21,7 +26,14 @@ export const updateApplicantsDetailByID = async (
   id: number,
   data: Partial<TApplicantsDetailsWrite>
 ): Promise<TApplicantsDetailsRead> => {
-  return db.applicants_details.update({ where: { detail_applicants_id: id }, data });
+  return db.applicants_details.update({
+    where: { detail_applicants_id: id },
+    data,
+    include: {
+      applicant: { include: { user: true, vacancy: true } },
+      vacancy: true,
+    },
+  });
 };
 
 export const deleteApplicantsDetailByID = async (id: number): Promise<TApplicantsDetailsRead> => {

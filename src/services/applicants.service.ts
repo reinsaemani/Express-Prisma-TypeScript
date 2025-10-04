@@ -7,7 +7,7 @@ export const createApplicant = async (data: TApplicantsWrite): Promise<TApplican
     include: {
       user: true,
       vacancy: true,
-      details: true,
+      details: { include: { vacancy: true } },
     },
   });
 };

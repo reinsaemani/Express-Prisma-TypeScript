@@ -27,10 +27,7 @@ export const createUser = async (user: TUserWrite): Promise<TUserRead> => {
 };
 
 // update user
-export const updateUser = async (
-  id: TUserID,
-  user: TUserWrite
-): Promise<TUserRead> => {
+export const updateUser = async (id: TUserID, user: TUserWrite): Promise<TUserRead> => {
   return db.users.update({
     where: { user_id: id },
     data: user,

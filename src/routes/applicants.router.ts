@@ -10,6 +10,7 @@ router.get('/:id', protectAuth, isAdmin, ApplicantsController.getApplicant);
 router.get('/', protectAuth, isAdmin, ApplicantsController.listApplicants);
 router.put('/:id', protectAuth, isAdmin, ApplicantsController.updateApplicant);
 router.delete('/:id', protectAuth, isAdmin, ApplicantsController.deleteApplicant);
+
 // router.post('/',ApplicantsController.createApplicant);
 // router.get('/:id',ApplicantsController.getApplicant);
 // router.get('/',ApplicantsController.listApplicants);

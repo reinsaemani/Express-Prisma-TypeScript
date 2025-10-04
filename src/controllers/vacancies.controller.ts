@@ -1,7 +1,7 @@
 import { HttpStatusCode } from '../utils/HttpStatusCode';
 import * as VacanciesService from '../services/vacancies.service';
 import { NextFunction, Request, Response } from 'express';
-import { vacanciesSchema } from '../types/zod';
+import { vacanciesSchema, vacanciesUpdateSchema } from '../types/zod';
 import { TVacanciesWrite } from '../types/general';
 import { sendNotFoundResponse, sendSuccessNoDataResponse, sendSuccessResponse } from '../utils/responseHandler';
 
@@ -34,7 +34,7 @@ export const createVacancies = async (req: Request, res: Response, next: NextFun
     };
 
     const newVacancies = await VacanciesService.createVacancies(vacancies);
-    return sendSuccessResponse(res, newVacancies, "Vacancy created successfully", HttpStatusCode.CREATED);
+    return sendSuccessResponse(res, newVacancies, 'Vacancy created successfully', HttpStatusCode.CREATED);
   } catch (error) {
     next(error);
   }
@@ -50,7 +50,7 @@ export const updateVacancies = async (req: Request, res: Response, next: NextFun
     };
 
     const updatedVacancies = await VacanciesService.updateVacancies(vacancies, id);
-    return sendSuccessResponse(res, updatedVacancies, "Vacancy updated successfully");
+    return sendSuccessResponse(res, updatedVacancies, 'Vacancy updated successfully');
   } catch (error: any) {
     console.error('CreateVacancies error:', error);
     next(error);
@@ -59,26 +59,17 @@ export const updateVacancies = async (req: Request, res: Response, next: NextFun
 
 // controllers/vacancies.controller.ts
 
-export const updateVacancyStatus = async (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
+export const updateVacancyStatus = async (request: Request, response: Response, next: NextFunction) => {
   try {
     const id = parseInt(request.params.id, 10);
     const { is_open } = request.body;
     const updatedVacancy = await VacanciesService.updateVacancyStatus(id, is_open);
 
-    return sendSuccessResponse(
-      response,
-      updatedVacancy,
-      "Vacancy status updated successfully"
-    );
+    return sendSuccessResponse(response, updatedVacancy, 'Vacancy status updated successfully');
   } catch (error: any) {
     next(error);
   }
 };
-
 
 export const deleteVacancies = async (request: Request, response: Response, next: NextFunction) => {
   try {
@@ -107,6 +98,17 @@ export const validateVacanciesData = (request: Request, response: Response, next
   try {
     const vacancies = request.body;
     vacanciesSchema.parse(vacancies);
+    next();
+  } catch (error) {
+    console.error('Validation error:', error);
+    next(error);
+  }
+};
+
+export const validateVacanciesUpdateData = (request: Request, response: Response, next: NextFunction) => {
+  try {
+    const vacancies = request.body;
+    vacanciesUpdateSchema.parse(vacancies);
     next();
   } catch (error) {
     console.error('Validation error:', error);

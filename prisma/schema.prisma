@@ -13,7 +13,7 @@ model account {
   password_hash String       @db.VarChar(255)
   role          account_role @default(ADMIN)
   created_at    DateTime     @default(now()) @db.Timestamp(0)
-  updated_at    DateTime     @default(now()) @db.Timestamp(0)
+  updated_at    DateTime?    @db.Timestamp(0)
 }
 
 model applicants {
@@ -22,10 +22,12 @@ model applicants {
   vacancy_id    Int
   current_stage applicants_current_stage?
   created_at    DateTime                  @default(now()) @db.Timestamp(0)
-  updated_at    DateTime                  @default(now()) @db.Timestamp(0)
-  user          users                     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
-  vacancy       vacancies                 @relation(fields: [vacancy_id], references: [vacancies_id], onDelete: Cascade)
-  details       applicants_details[]
+  updated_at    DateTime?                 @db.Timestamp(0)
+
+  // 🔗 Relasi
+  user    users                @relation(fields: [user_id], references: [user_id])
+  vacancy vacancies            @relation(fields: [vacancy_id], references: [vacancies_id])
+  details applicants_details[]
 
   @@unique([user_id, vacancy_id], map: "uniq_user_vacancy")
   @@index([vacancy_id], map: "fk_app_vacancy")
@@ -34,17 +36,21 @@ model applicants {
 model applicants_details {
   detail_applicants_id Int                       @id @default(autoincrement())
   applicants_id        Int
+  vacancy_id           Int // relasi ke lowongan spesifik
   stage                applicants_details_stage
-  attempt_no           Int                       @default(1)
-  status               applicants_details_status @default(PENDING)
+  status               applicants_details_status
   notes                String?                   @db.Text
-  penilaian            String?                   @db.Text
+  penilaian            String?                   @db.VarChar(50) // contoh "85/100"
   schedule_at          DateTime?                 @db.DateTime(0)
   created_at           DateTime                  @default(now()) @db.Timestamp(0)
-  updated_at           DateTime                  @default(now()) @db.Timestamp(0)
-  applicants           applicants                @relation(fields: [applicants_id], references: [applicants_id], onDelete: Cascade)
+  updated_at           DateTime?                 @db.Timestamp(0)
+
+  // Relasi
+  applicant applicants @relation(fields: [applicants_id], references: [applicants_id])
+  vacancy   vacancies  @relation(fields: [vacancy_id], references: [vacancies_id])
 
   @@index([applicants_id], map: "applicants_details_applicants_id_fkey")
+  @@index([vacancy_id], map: "applicants_details_vacancy_id_fkey")
 }
 
 model documents_files {
@@ -55,12 +61,14 @@ model documents_files {
   photo_path         String?  @db.VarChar(255)
   created_at         DateTime @default(now()) @db.Timestamp(0)
   updated_at         DateTime @default(now()) @db.Timestamp(0)
-  users              users[]
+
+  // 🔗 Relasi
+  users users[]
 }
 
 model users {
   user_id              Int                      @id @default(autoincrement())
-  NIK                  String?                  @unique(map: "NIK") @db.VarChar(32)
+  NIK                  String?                  @unique(map: "NIK") @db.VarChar(16)
   full_name            String                   @db.VarChar(200)
   gender               users_gender?
   place_of_birth       String?                  @db.VarChar(100)
@@ -79,13 +87,17 @@ model users {
   department_faculty   String?                  @db.VarChar(150)
   study_program        String?                  @db.VarChar(150)
   educational_level    users_educational_level?
-  work_experience      String?                  @db.Text
+  GPA_grades           Int?
+  work_experience      users_work_experience?
   banned_until         DateTime?                @db.Date
   personality_test_url String?                  @db.VarChar(255)
   created_at           DateTime                 @default(now()) @db.Timestamp(0)
-  updated_at           DateTime                 @default(now()) @db.Timestamp(0)
-  applicantss          applicants[]
-  documents            documents_files?         @relation(fields: [documents_files_id], references: [documents_files_id])
+  updated_at           DateTime?                @db.Timestamp(0)
+
+  // 🔗 Relasi
+  documents documents_files? @relation(fields: [documents_files_id], references: [documents_files_id])
+
+  applicants applicants[]
 
   @@index([documents_files_id], map: "users_documents_files_id_fkey")
 }
@@ -93,7 +105,6 @@ model users {
 model vacancies {
   vacancies_id     Int               @id @default(autoincrement())
   title            String            @db.VarChar(200)
-  location         String?           @db.VarChar(150)
   type             vacancies_type
   degree           vacancies_degree?
   qualification    String?           @db.Text
@@ -101,10 +112,13 @@ model vacancies {
   documents        String?           @db.Text
   benefit          String?           @db.Text
   deadline         DateTime?         @db.Date
+  level            vacancies_level?
   is_open          Boolean           @default(true)
   created_at       DateTime          @default(now()) @db.Timestamp(0)
-  updated_at       DateTime          @default(now()) @db.Timestamp(0)
-  applicantss      applicants[]
+  updated_at       DateTime?         @db.Timestamp(0)
+
+  applicants applicants[]
+  details    applicants_details[]
 }
 
 enum applicants_details_stage {
@@ -116,9 +130,14 @@ enum applicants_details_stage {
 }
 
 enum vacancies_type {
-  Full_Time @map("Full-Time")
-  Part_Time @map("Part-Time")
+  Full_Time  @map("Full-Time")
+  Internship
   Freelance
+}
+
+enum vacancies_level {
+  Staff
+  Pejuang
 }
 
 enum account_role {
@@ -143,22 +162,31 @@ enum users_gender {
 }
 
 enum applicants_details_status {
-  PENDING
-  PASSED
-  FAILED
-  SKIPPED
+  RECOMMENDED
+  NOT_RECOMMENDED
+  CONSIDERED
+  HOLD
 }
 
 enum vacancies_degree {
-  SMA_SMK  @map("SMA/SMK")
+  SMP
+  SMA_SMK
   Diploma
   Sarjana
   Magister
 }
 
 enum users_educational_level {
+  SMP
   SMA_SMK  @map("SMA/SMK")
   Diploma
   Sarjana
   Magister
+}
+
+enum users_work_experience {
+  FRESH_GRADUATES       @map("fresh_graduates")
+  ONE_TO_THREE_YEARS    @map("1 - 3 years")
+  THREE_TO_FIVE_YEARS   @map("3 - 5 years")
+  MORE_THAN_FIVE_YEARS  @map("> 5 years")
 }
