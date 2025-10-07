@@ -16,6 +16,7 @@ import authRouter from './routes/auth.router';
 import documentsRouter from './routes/documents.routes';
 import path from 'path';
 import regionRouter from './routes/region.router';
+// import methodOverride from 'method-override';
 
 dotenv.config();
 
@@ -39,6 +40,7 @@ app.use(cors(corsOptions));
 
 // pastikan ini DISEBELAH middleware JSON / cookie
 app.options('*', cors(corsOptions));
+
 // JSON Middleware & Form Data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -48,6 +50,8 @@ app.use(cookieParser());
 
 // Request Logger
 app.use(requestLogger);
+
+// app.use(methodOverride('_method'));
 
 app.use('/uploads/applicants', express.static(path.join(__dirname, '../storage/uploads/applicants')));
 

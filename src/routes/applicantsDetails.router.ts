@@ -1,11 +1,13 @@
 import express from 'express';
 import * as ApplicantsDetailsController from '../controllers/applicantsDetails.controller';
 import { protectAuth } from '../middleware/auth-middleware';
-import { isAdmin, isPengawasOrInterviewer } from '../middleware/role-middleware';
+import { isAdmin } from '../middleware/role-middleware';
+import multer from 'multer';
 
 const router = express.Router();
+const upload = multer();
 
-router.post('/', protectAuth, isAdmin, ApplicantsDetailsController.createApplicantsDetail);
+router.post('/', upload.single('penilaian_file'), ApplicantsDetailsController.createApplicantsDetail);
 router.get('/:id', protectAuth, isAdmin, ApplicantsDetailsController.getApplicantsDetail);
 router.get(
   '/applicant/:applicants_id',
@@ -13,7 +15,14 @@ router.get(
   isAdmin,
   ApplicantsDetailsController.listApplicantsDetailsByApplicant
 );
-router.put('/:id', protectAuth, isPengawasOrInterviewer, ApplicantsDetailsController.updateApplicantsDetail);
+router.put(
+  '/:id',
+  protectAuth,
+  // isAdmin,
+  // isPengawasOrInterviewer,
+  upload.single('penilaian_file'),
+  ApplicantsDetailsController.updateApplicantsDetail
+);
 router.delete('/:id', protectAuth, isAdmin, ApplicantsDetailsController.deleteApplicantsDetail);
 
 // router.get('/', ApplicantsDetailsController.listAllApplicantsDetails);

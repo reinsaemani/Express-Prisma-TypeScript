@@ -18,6 +18,9 @@ export const listVacancies = async (): Promise<TVacanciesRead[]> => {
       deadline: true,
       is_open: true,
     },
+    orderBy: {
+      deadline: 'asc',
+    },
   });
 };
 

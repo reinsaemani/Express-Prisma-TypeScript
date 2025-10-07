@@ -3,7 +3,7 @@ import * as ApplicantsDetailsService from '../services/applicantsDetails.service
 import { applicantsDetailsSchema, applicantsDetailsUpdateSchema } from '../types/zod';
 import { sendSuccessResponse, sendBadRequestResponse } from '../utils/responseHandler';
 
-//List
+// List all
 export const listAllApplicantsDetails = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const details = await ApplicantsDetailsService.listAllApplicantsDetails();
@@ -13,7 +13,6 @@ export const listAllApplicantsDetails = async (req: Request, res: Response, next
   }
 };
 
-// Create
 export const createApplicantsDetail = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const parsed = applicantsDetailsSchema.parse(req.body);
@@ -21,7 +20,7 @@ export const createApplicantsDetail = async (req: Request, res: Response, next: 
     const normalized = {
       ...parsed,
       notes: parsed.notes ?? null,
-      penilaian: parsed.penilaian ?? null,
+      penilaian_file_path: parsed.penilaian_file_path ?? null,
       schedule_at: parsed.schedule_at ?? null,
     };
 
@@ -32,7 +31,6 @@ export const createApplicantsDetail = async (req: Request, res: Response, next: 
   }
 };
 
-// Get by ID
 export const getApplicantsDetail = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = Number(req.params.id);
@@ -44,7 +42,6 @@ export const getApplicantsDetail = async (req: Request, res: Response, next: Nex
   }
 };
 
-// List by applicant
 export const listApplicantsDetailsByApplicant = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const applicants_id = Number(req.params.applicants_id);
@@ -55,17 +52,20 @@ export const listApplicantsDetailsByApplicant = async (req: Request, res: Respon
   }
 };
 
-// Update (Pengawas & Interviewer bisa update notes & penilaian)
 export const updateApplicantsDetail = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = Number(req.params.id);
     const parsed = applicantsDetailsUpdateSchema.parse(req.body);
+
+    const filePath = req.file ? `/uploads/penilaian/${req.file.filename}` : parsed.penilaian_file_path ?? null;
+
     const normalized = {
       ...parsed,
       notes: parsed.notes ?? null,
-      penilaian: parsed.penilaian ?? null,
+      penilaian_file_path: filePath,
       schedule_at: parsed.schedule_at ?? null,
     };
+
     const updated = await ApplicantsDetailsService.updateApplicantsDetailByID(id, normalized);
     return sendSuccessResponse(res, updated, 'Applicants detail updated successfully');
   } catch (error) {
@@ -73,7 +73,6 @@ export const updateApplicantsDetail = async (req: Request, res: Response, next: 
   }
 };
 
-// Delete
 export const deleteApplicantsDetail = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = Number(req.params.id);

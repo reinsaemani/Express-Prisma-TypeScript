@@ -26,7 +26,7 @@ export type TUpdateRoleSchema = z.infer<typeof updateRoleSchema>;
 export const applicantsSchema = z.object({
   user_id: z.number().int(),
   vacancy_id: z.number().int(),
-  current_stage: z.enum(['HR_INT', 'SKILL_TEST', 'USER_INT', 'FINAL_INT', 'OFFERING', 'HIRED', 'REJECTED']).optional(),
+  current_stage: z.enum(['SCREENING', 'HR_INT', 'SKILL_TEST', 'USER_INT', 'FINAL_INT', 'OFFERING', 'HIRED']).optional(),
 });
 
 export const applicantsUpdateSchema = applicantsSchema.partial();
@@ -36,14 +36,14 @@ export type TApplicantsUpdateSchema = z.infer<typeof applicantsUpdateSchema>;
 // _____________  Applicants Details Schema  _____________
 
 export const applicantsDetailsSchema = z.object({
-  applicants_id: z.number().int(),
-  vacancy_id: z.number().int(),
+  applicants_id: z.coerce.number().int(),
+  vacancy_id: z.coerce.number().int(),
 
-  stage: z.enum(['HR_INT', 'SKILL_TEST', 'USER_INT', 'FINAL_INT', 'OFFERING']),
-  status: z.enum(['RECOMMENDED', 'NOT_RECOMMENDED', 'CONSIDERED', 'HOLD']),
+  stage: z.enum(['SCREENING', 'HR_INT', 'SKILL_TEST', 'USER_INT', 'FINAL_INT', 'OFFERING']),
+  status: z.enum(['RECOMMENDED', 'NOT_RECOMMENDED', 'CONSIDERED', 'HOLD', 'REJECTED']).optional(),
 
   notes: z.string().nullable().optional(),
-  penilaian: z.string().nullable().optional(),
+  penilaian_file_path: z.string().nullable().optional(),
   schedule_at: z.coerce.date().nullable().optional(),
 });
 

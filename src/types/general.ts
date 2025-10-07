@@ -20,7 +20,8 @@ export type TApplicantsWrite = Omit<applicants, 'applicants_id' | 'created_at' |
 
 export type TApplicantsDetailsID = applicants_details['detail_applicants_id'];
 export type TApplicantsDetailsRead = applicants_details;
-export type TApplicantsDetailsWrite = Omit<applicants_details, 'detail_applicants_id' | 'created_at' | 'updated_at'>;
+export type TApplicantsDetailsWrite = Omit<applicants_details, 'detail_applicants_id' | 'created_at' | 'updated_at'> &
+  Partial<Pick<applicants_details, 'penilaian_file_path'>>;
 
 // // _____________  User Types  _____________
 

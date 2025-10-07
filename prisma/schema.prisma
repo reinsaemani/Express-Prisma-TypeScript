@@ -36,11 +36,11 @@ model applicants {
 model applicants_details {
   detail_applicants_id Int                       @id @default(autoincrement())
   applicants_id        Int
-  vacancy_id           Int // relasi ke lowongan spesifik
+  vacancy_id           Int
   stage                applicants_details_stage
-  status               applicants_details_status
+  status               applicants_details_status?
   notes                String?                   @db.Text
-  penilaian            String?                   @db.VarChar(50) // contoh "85/100"
+  penilaian_file_path  String?                   @db.VarChar(255)
   schedule_at          DateTime?                 @db.DateTime(0)
   created_at           DateTime                  @default(now()) @db.Timestamp(0)
   updated_at           DateTime?                 @db.Timestamp(0)
@@ -59,6 +59,7 @@ model documents_files {
   id_card_path       String?  @db.VarChar(255)
   certificate_path   String?  @db.VarChar(255)
   photo_path         String?  @db.VarChar(255)
+  transcript_path    String?  @db.VarChar(255)
   created_at         DateTime @default(now()) @db.Timestamp(0)
   updated_at         DateTime @default(now()) @db.Timestamp(0)
 
@@ -122,11 +123,13 @@ model vacancies {
 }
 
 enum applicants_details_stage {
+  SCREENING
   HR_INT
   SKILL_TEST
   USER_INT
   FINAL_INT
   OFFERING
+  HIRED
 }
 
 enum vacancies_type {
@@ -147,13 +150,13 @@ enum account_role {
 }
 
 enum applicants_current_stage {
+  SCREENING
   HR_INT
   SKILL_TEST
   USER_INT
   FINAL_INT
   OFFERING
   HIRED
-  REJECTED
 }
 
 enum users_gender {
@@ -166,6 +169,7 @@ enum applicants_details_status {
   NOT_RECOMMENDED
   CONSIDERED
   HOLD
+  REJECTED
 }
 
 enum vacancies_degree {
