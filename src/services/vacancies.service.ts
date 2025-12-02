@@ -73,7 +73,7 @@ export const createVacancies = async (vacancies: TVacanciesWrite): Promise<TVaca
 
 // Update Vacancies
 export const updateVacancies = async (
-  Vacancies: Partial<TVacanciesWrite>, // 🔥 ubah jadi Partial
+  Vacancies: Partial<TVacanciesWrite>,
   id: TVacanciesID
 ): Promise<TVacanciesRead> => {
   return db.vacancies.update({
@@ -98,8 +98,6 @@ export const updateVacancies = async (
     },
   });
 };
-
-// services/vacancies.service.ts
 
 export const updateVacancyStatus = async (id: TVacanciesID, isOpen: boolean): Promise<TVacanciesRead> => {
   return db.vacancies.update({
@@ -126,11 +124,23 @@ export const updateVacancyStatus = async (id: TVacanciesID, isOpen: boolean): Pr
   });
 };
 
-// Delete Vacancies
 export const deleteVacancies = async (id: TVacanciesID): Promise<void> => {
   await db.vacancies.delete({
     where: {
       vacancies_id: id,
     },
   });
+};
+
+export const closeExpiredVacancies = async (): Promise<number> => {
+  const result = await db.vacancies.updateMany({
+    where: {
+      deadline: { lt: new Date() },
+      is_open: true,
+    },
+    data: {
+      is_open: false,
+    },
+  });
+  return result.count;
 };

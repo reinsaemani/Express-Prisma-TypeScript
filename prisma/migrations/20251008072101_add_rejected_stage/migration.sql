@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `applicants` MODIFY `current_stage` ENUM('SCREENING', 'HR_INT', 'SKILL_TEST', 'USER_INT', 'FINAL_INT', 'OFFERING', 'HIRED', 'REJECTED') NULL;

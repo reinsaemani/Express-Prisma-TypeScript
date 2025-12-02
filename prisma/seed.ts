@@ -11,7 +11,6 @@ async function seed() {
   await db.account.deleteMany();
   await db.documents_files.deleteMany();
 
-  console.log('[*] Deleted all records');
 
   // Seed account (ADMIN, PENGAWAS, INTERVIEWER)
   const adminPassword = await hashPassword('admin123');

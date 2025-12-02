@@ -21,6 +21,7 @@ export const getApplicantByID = async (id: number): Promise<TApplicantsRead | nu
 
 export const listApplicants = async (): Promise<TApplicantsRead[]> => {
   return db.applicants.findMany({
+    orderBy: { created_at: 'desc' },
     include: { user: true, vacancy: true, details: true },
   });
 };

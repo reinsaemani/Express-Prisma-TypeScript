@@ -52,12 +52,10 @@ export const updateVacancies = async (req: Request, res: Response, next: NextFun
     const updatedVacancies = await VacanciesService.updateVacancies(vacancies, id);
     return sendSuccessResponse(res, updatedVacancies, 'Vacancy updated successfully');
   } catch (error: any) {
-    console.error('CreateVacancies error:', error);
     next(error);
   }
 };
 
-// controllers/vacancies.controller.ts
 
 export const updateVacancyStatus = async (request: Request, response: Response, next: NextFunction) => {
   try {

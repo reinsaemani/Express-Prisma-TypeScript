@@ -4,9 +4,10 @@ import { applicantsDetailsSchema, applicantsDetailsUpdateSchema } from '../types
 import { sendSuccessResponse, sendBadRequestResponse } from '../utils/responseHandler';
 
 // List all
-export const listAllApplicantsDetails = async (req: Request, res: Response, next: NextFunction) => {
+export const listApplicantsDetails = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const details = await ApplicantsDetailsService.listAllApplicantsDetails();
+    const applicants_id = req.query.applicants_id ? Number(req.query.applicants_id) : undefined;
+    const details = await ApplicantsDetailsService.listApplicantsDetails(applicants_id);
     return sendSuccessResponse(res, details);
   } catch (error) {
     next(error);
@@ -22,6 +23,7 @@ export const createApplicantsDetail = async (req: Request, res: Response, next: 
       notes: parsed.notes ?? null,
       penilaian_file_path: parsed.penilaian_file_path ?? null,
       schedule_at: parsed.schedule_at ?? null,
+      status: parsed.status ?? null,
     };
 
     const created = await ApplicantsDetailsService.createApplicantsDetail(normalized);
@@ -37,16 +39,6 @@ export const getApplicantsDetail = async (req: Request, res: Response, next: Nex
     const detail = await ApplicantsDetailsService.getApplicantsDetailByID(id);
     if (!detail) return sendBadRequestResponse(res, 'Applicants detail not found');
     return sendSuccessResponse(res, detail);
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const listApplicantsDetailsByApplicant = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const applicants_id = Number(req.params.applicants_id);
-    const details = await ApplicantsDetailsService.listApplicantsDetailsByApplicant(applicants_id);
-    return sendSuccessResponse(res, details);
   } catch (error) {
     next(error);
   }

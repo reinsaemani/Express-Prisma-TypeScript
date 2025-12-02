@@ -17,6 +17,8 @@ import documentsRouter from './routes/documents.routes';
 import path from 'path';
 import regionRouter from './routes/region.router';
 // import methodOverride from 'method-override';
+import './cron/autoCloseVacancies.cron';
+import bannerRoutes from './routes/banner.router';
 
 dotenv.config();
 
@@ -53,7 +55,7 @@ app.use(requestLogger);
 
 // app.use(methodOverride('_method'));
 
-app.use('/uploads/applicants', express.static(path.join(__dirname, '../storage/uploads/applicants')));
+app.use('/storage', express.static(path.resolve('storage')));
 
 // Main Routes
 app.use('/api/accounts', accountRouter);
@@ -64,6 +66,7 @@ app.use('/api/users', userRouter);
 app.use('/api/vacancies', vacanciesRouter);
 app.use('/api/documents', documentsRouter);
 app.use('/api/region', regionRouter);
+app.use('/api/banners', bannerRoutes);
 // app.use('/api/recruitment', recruitmentRouter);
 
 // Not Found Middleware

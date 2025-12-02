@@ -5,6 +5,26 @@ import { TApplicantsDetailsWrite, TApplicantsDetailsRead } from '../types/genera
    Utility: Sinkronisasi current_stage otomatis
    ============================================================ */
 async function syncApplicantStage(applicants_id: number, vacancy_id: number) {
+  // Cek apakah ada record dengan status REJECTED
+  const rejected = await db.applicants_details.findFirst({
+    where: {
+      applicants_id,
+      vacancy_id,
+      status: 'REJECTED',
+    },
+    select: { detail_applicants_id: true },
+  });
+
+  if (rejected) {
+    // 🔥 Kalau ada yang REJECTED, tandai current_stage = REJECTED
+    await db.applicants.update({
+      where: { applicants_id },
+      data: { current_stage: 'REJECTED' },
+    });
+    return;
+  }
+
+  // Kalau belum ada yang rejected, ambil tahapan terbaru
   const latest = await db.applicants_details.findFirst({
     where: { applicants_id, vacancy_id },
     orderBy: [{ updated_at: 'desc' }, { created_at: 'desc' }],
@@ -21,8 +41,16 @@ async function syncApplicantStage(applicants_id: number, vacancy_id: number) {
    CRUD utama
    ============================================================ */
 
-export const listAllApplicantsDetails = async (): Promise<TApplicantsDetailsRead[]> => {
-  return db.applicants_details.findMany();
+export const listApplicantsDetails = async (applicants_id?: number): Promise<TApplicantsDetailsRead[]> => {
+  const where = applicants_id ? { applicants_id } : {};
+  return db.applicants_details.findMany({
+    where,
+    orderBy: { schedule_at: 'desc' },
+    include: {
+      applicant: { include: { user: true } },
+      vacancy: true,
+    },
+  });
 };
 
 export const createApplicantsDetail = async (data: TApplicantsDetailsWrite): Promise<TApplicantsDetailsRead> => {
@@ -34,23 +62,17 @@ export const createApplicantsDetail = async (data: TApplicantsDetailsWrite): Pro
     },
   });
 
+  // 🔄 Sinkronisasi current_stage otomatis
   await syncApplicantStage(created.applicants_id, created.vacancy_id);
   return created;
 };
 
-export const getApplicantsDetailByID = async (id: number): Promise<TApplicantsDetailsRead | null> => {
-  return db.applicants_details.findUnique({ where: { detail_applicants_id: id } });
-};
-
-export const listApplicantsDetailsByApplicant = async (applicants_id: number) => {
-  return db.applicants_details.findMany({
-    where: { applicants_id },
+export const getApplicantsDetailByID = async (applicants_id: number): Promise<TApplicantsDetailsRead | null> => {
+  return db.applicants_details.findUnique({
+    where: { detail_applicants_id: applicants_id },
     include: {
       applicant: { include: { user: true } },
       vacancy: true,
-    },
-    orderBy: {
-      schedule_at: 'desc',
     },
   });
 };
@@ -68,6 +90,7 @@ export const updateApplicantsDetailByID = async (
     },
   });
 
+  // 🔄 Sinkronisasi current_stage otomatis
   await syncApplicantStage(updated.applicants_id, updated.vacancy_id);
   return updated;
 };

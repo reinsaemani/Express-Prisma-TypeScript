@@ -122,6 +122,17 @@ model vacancies {
   details    applicants_details[]
 }
 
+model banners {
+  banner_id    Int      @id @default(autoincrement())
+  title        String?  @db.VarChar(150)
+  image_path   String   @db.VarChar(255)
+  order        Int      @default(0)
+  is_active    Boolean  @default(true)
+  created_at   DateTime @default(now()) @db.Timestamp(0)
+  updated_at   DateTime @updatedAt @db.Timestamp(0)
+}
+
+
 enum applicants_details_stage {
   SCREENING
   HR_INT
@@ -157,6 +168,7 @@ enum applicants_current_stage {
   FINAL_INT
   OFFERING
   HIRED
+  REJECTED
 }
 
 enum users_gender {
@@ -189,7 +201,7 @@ enum users_educational_level {
 }
 
 enum users_work_experience {
-  FRESH_GRADUATES       @map("fresh_graduates")
+  FRESH_GRADUATES       @map("fresh graduates")
   ONE_TO_THREE_YEARS    @map("1 - 3 years")
   THREE_TO_FIVE_YEARS   @map("3 - 5 years")
   MORE_THAN_FIVE_YEARS  @map("> 5 years")

@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { vacancies, users, documents_files, account, applicants_details, applicants } from '@prisma/client';
 
-// _____________  Account Schema  _____________
-
+/* ============================================================
+   ACCOUNT SCHEMA
+   ============================================================ */
 export const accountSchema = z.object({
   username: z.string().min(3).max(100),
   password: z.string().min(6).max(50),
@@ -21,47 +21,41 @@ export type TAccountSchema = z.infer<typeof accountSchema>;
 export type TResetPasswordSchema = z.infer<typeof resetPasswordSchema>;
 export type TUpdateRoleSchema = z.infer<typeof updateRoleSchema>;
 
-// _____________  Applicants Schema _____________
-
+/* ============================================================
+   APPLICANTS SCHEMA
+   ============================================================ */
 export const applicantsSchema = z.object({
   user_id: z.number().int(),
   vacancy_id: z.number().int(),
-  current_stage: z.enum(['SCREENING', 'HR_INT', 'SKILL_TEST', 'USER_INT', 'FINAL_INT', 'OFFERING', 'HIRED']).optional(),
+  current_stage: z
+    .enum(['SCREENING', 'HR_INT', 'SKILL_TEST', 'USER_INT', 'FINAL_INT', 'OFFERING', 'HIRED', 'REJECTED'])
+    .optional(),
 });
-
 export const applicantsUpdateSchema = applicantsSchema.partial();
-export type TApplicantsSchema = z.infer<typeof applicantsSchema>;
-export type TApplicantsUpdateSchema = z.infer<typeof applicantsUpdateSchema>;
 
-// _____________  Applicants Details Schema  _____________
-
+/* ============================================================
+   APPLICANTS DETAILS SCHEMA
+   ============================================================ */
 export const applicantsDetailsSchema = z.object({
   applicants_id: z.coerce.number().int(),
   vacancy_id: z.coerce.number().int(),
-
-  stage: z.enum(['SCREENING', 'HR_INT', 'SKILL_TEST', 'USER_INT', 'FINAL_INT', 'OFFERING']),
-  status: z.enum(['RECOMMENDED', 'NOT_RECOMMENDED', 'CONSIDERED', 'HOLD', 'REJECTED']).optional(),
-
+  stage: z.enum(['SCREENING', 'HR_INT', 'SKILL_TEST', 'USER_INT', 'FINAL_INT', 'OFFERING', 'HIRED']),
+  status: z.enum(['RECOMMENDED', 'NOT_RECOMMENDED', 'CONSIDERED', 'HOLD', 'REJECTED']).nullable().optional(),
   notes: z.string().nullable().optional(),
   penilaian_file_path: z.string().nullable().optional(),
   schedule_at: z.coerce.date().nullable().optional(),
 });
-
 export const applicantsDetailsUpdateSchema = applicantsDetailsSchema.partial();
 
-export type TApplicantsDetailsSchema = z.infer<typeof applicantsDetailsSchema>;
-export type TApplicantsDetailsUpdateSchema = z.infer<typeof applicantsDetailsUpdateSchema>;
-
-// _____________  User Schema _____________
-
+/* ============================================================
+   USER SCHEMA
+   ============================================================ */
 export const userCreateSchema = z.object({
-  NIK: z.string().length(16),
-
+  NIK: z.string().length(16).optional(),
   full_name: z.string().min(1).max(200),
   gender: z.enum(['MALE', 'FEMALE']),
   place_of_birth: z.string().min(1).max(100),
   date_of_birth: z.coerce.date(),
-
   phone_number: z.string().min(1).max(50),
   email: z.string().email().max(150),
   marital_status: z.string().min(1).max(50),
@@ -71,81 +65,55 @@ export const userCreateSchema = z.object({
   subdistrict: z.string().min(1).max(100),
   district_town: z.string().min(1).max(100),
   province: z.string().min(1).max(100),
-
   university_school: z.string().min(1).max(150),
   department_faculty: z.string().min(1).max(150),
   study_program: z.string().min(1).max(150),
-
   educational_level: z.enum(['SMA_SMK', 'Diploma', 'Sarjana', 'Magister']),
   work_experience: z.string().min(1),
-
-  personality_test_url: z.string().url().optional(),
-  documents_files_id: z.number().int(),
+  personality_test_url: z.string().url().nullable().optional(),
+  documents_files_id: z.number().int().optional(),
 });
-
 export const userUpdateSchema = userCreateSchema.partial();
-export type TuserCreateSchema = z.infer<typeof userCreateSchema>;
-export type TuserUpdateSchema = z.infer<typeof userUpdateSchema>;
 
-// _____________  Vacancies Schema  _____________
-
+/* ============================================================
+   VACANCIES SCHEMA
+   ============================================================ */
 export const vacanciesTypeEnum = z.enum(['Full_Time', 'Internship', 'Freelance']);
 export const vacanciesDegreeEnum = z.enum(['SMP', 'SMA_SMK', 'Diploma', 'Sarjana', 'Magister']);
 export const vacanciesLevelEnum = z.enum(['Staff', 'Pejuang']);
 
 export const vacanciesSchema = z.object({
-  vacancies_id: z.number().int().positive().optional(), // auto-increment
-
   title: z.string().min(1).max(200),
   level: vacanciesLevelEnum,
   type: vacanciesTypeEnum,
-
-  degree: vacanciesDegreeEnum.optional(), // nullable di schema Prisma
-
+  degree: vacanciesDegreeEnum.optional(),
   qualification: z.string().min(1),
   responsibilities: z.string().min(1),
-
-  documents: z.string().min(1).optional(), // nullable
-  benefit: z.string().min(1).optional(), // nullable
-
+  documents: z.string().optional(),
+  benefit: z.string().optional(),
   deadline: z.coerce.date(),
   is_open: z.boolean().default(true),
 });
-
 export const vacanciesUpdateSchema = vacanciesSchema.partial();
 
-// _____________  Accounts Types  _____________
+/* ============================================================
+   BANNER SCHEMA
+   ============================================================ */
+export const bannerSchema = z.object({
+  title: z.string().max(150).nullable().optional(),
+  image_path: z.string().optional(),
+  is_active: z.coerce.boolean().default(true),
+});
+export const bannerUpdateSchema = bannerSchema.partial();
 
-export type TAccountID = account['account_id'];
-export type TAccountRead = Omit<account, 'password_hash'>;
-export type TAccountWrite = Omit<account, 'account_id' | 'created_at' | 'updated_at'>;
-
-// ---------- Applicants Types ----------
-
-export type TApplicantsID = applicants['applicants_id'];
-export type TApplicantsRead = applicants & {
-  user: users;
-  vacancy: vacancies;
-  details?: applicants_details[];
-};
-export type TApplicantsWrite = Omit<applicants, 'applicants_id' | 'created_at' | 'updated_at'>;
-
-// _____________  Applicants Detail Types  _____________
-
-export type TApplicantsDetailsID = applicants_details['detail_applicants_id'];
-export type TApplicantsDetailsRead = applicants_details;
-export type TApplicantsDetailsWrite = Omit<applicants_details, 'detail_applicants_id' | 'created_at' | 'updated_at'>;
-
-// _____________  User Types  _____________
-
-export type TUserID = users['user_id'];
-export type TUserRead = users & { documents?: documents_files | null };
-export type TUserWrite = Omit<users, 'user_id' | 'created_at' | 'updated_at'>;
-
-// _____________  Vacancies Types  _____________
-
-export type TVacanciesID = vacancies['vacancies_id'];
-export type TVacanciesRead = Omit<vacancies, 'created_at' | 'updated_at'> & {
-  location?: string | null;
-};
-export type TVacanciesWrite = Omit<vacancies, 'vacancies_id' | 'created_at' | 'updated_at'>;
+/* ============================================================
+   TESTIMONIALS SCHEMA (Optional Next)
+   ============================================================ */
+export const testimonialSchema = z.object({
+  name: z.string().min(1).max(150),
+  message: z.string().min(1),
+  photo_path: z.string().optional(),
+  position: z.string().max(100).optional(),
+  is_active: z.coerce.boolean().default(true),
+});
+export const testimonialUpdateSchema = testimonialSchema.partial();
